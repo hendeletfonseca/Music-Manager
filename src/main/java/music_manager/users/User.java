@@ -1,67 +1,38 @@
 package music_manager.users;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 
-public abstract class User {
-    private String name;
-    private int id;
-    private String login;
+import music_manager.entities.Music;
+import music_manager.entities.MusicCollectionArrayList;
+
+public class User extends AbstractUser{
+    private MusicCollectionArrayList particularMusicCollection;
 
     public User(String name, int id, String login, String password) {
-        this.name = name;
-        this.id = id;
-        this.login = login;
+        super(name, id, login, password);
+        this.particularMusicCollection = new MusicCollectionArrayList();
     }
 
-    public String getName() {
-        return name;
+    public MusicCollectionArrayList getParticularMusicCollection() {
+        return particularMusicCollection;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void addMusic(Music music) {
+        particularMusicCollection.add(music);
     }
 
-    public int getId() {
-        return id;
+    public Music removeMusic(String title) {
+        int id = particularMusicCollection.search(title).getId();
+        return particularMusicCollection.remove(id);
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public Music searchMusic(String title) {
+        return particularMusicCollection.search(title);
     }
 
-    public String getLogin() {
-        return login;
+    public void viewMusic(String title) {
+        particularMusicCollection.search(title).toString();
     }
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public static void saveUser(int id, String login, String password) {
-        int PASSWORD_SIZE = 20;
-        int LOGIN_SIZE = 15;
-
-        try (RandomAccessFile file = new RandomAccessFile("users.bin", "rw")) {
-            int position = id * (PASSWORD_SIZE + LOGIN_SIZE);
-            file.seek(position);
-            byte[] loginBytes = padString(login, LOGIN_SIZE).getBytes();
-            byte[] passwordBytes = padString(password, PASSWORD_SIZE).getBytes();
-            file.write(loginBytes);
-            file.write(passwordBytes);
-            System.out.println("Usuário salvo com sucesso.");
-        } catch (IOException e) {
-            System.out.println("Ocorreu um erro ao salvar o usuário: " + e.getMessage());
-        }
-    }
-
-    private static String padString(String str, int length) {
-        if (str.length() < length) {
-            StringBuilder paddedStr = new StringBuilder(str);
-            while (paddedStr.length() < length) {
-                paddedStr.append(" ");
-            }
-            return paddedStr.toString();
-        }
-        return str.substring(0, length);
+    public void deleteParticularCollection() {
+        particularMusicCollection = null;
     }
 }

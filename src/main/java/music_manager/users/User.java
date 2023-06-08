@@ -1,38 +1,43 @@
 package music_manager.users;
 
-import music_manager.entities.Music;
-import music_manager.entities.MusicCollectionArrayList;
+import music_manager.collections.MusicCollection;
+import music_manager.collections.MusicCollectionArrayList;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
 
 public class User extends AbstractUser{
-    private MusicCollectionArrayList particularMusicCollection;
 
-    public User(String name, int id, String login, String password) {
-        super(name, id, login, password);
-        this.particularMusicCollection = new MusicCollectionArrayList();
+    private MusicCollection particularMusicCollection;
+    public User(String name, int id) {
+        super(name, id);
+        this. particularMusicCollection = new MusicCollectionArrayList();
+        this.particularMusicCollection.load();
     }
 
-    public MusicCollectionArrayList getParticularMusicCollection() {
+    public MusicCollection getParticularMusicCollection() {
         return particularMusicCollection;
     }
 
-    public void addMusic(Music music) {
-        particularMusicCollection.add(music);
+    public boolean createParticularMusicCollection() {
+        String fileName = getName() + ".bin";
+        File file = new File(fileName);
+
+        if (file.exists()) {
+            System.out.println("Particular music collection file already exists.");
+            return false;
+        }
+
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            randomAccessFile.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public Music removeMusic(String title) {
-        int id = particularMusicCollection.search(title).getId();
-        return particularMusicCollection.remove(id);
-    }
-
-    public Music searchMusic(String title) {
-        return particularMusicCollection.search(title);
-    }
-
-    public void viewMusic(String title) {
-        particularMusicCollection.search(title).toString();
-    }
-
-    public void deleteParticularCollection() {
-        particularMusicCollection = null;
-    }
 }

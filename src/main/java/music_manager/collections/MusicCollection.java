@@ -1,4 +1,6 @@
-package music_manager.entities;
+package music_manager.collections;
+
+import music_manager.entities.Music;
 
 public abstract class MusicCollection {
 
@@ -21,4 +23,5 @@ public abstract class MusicCollection {
     public abstract Music search(int id);
     public abstract Music remove(int id);
     public abstract void print();
+    public abstract void load();
 }

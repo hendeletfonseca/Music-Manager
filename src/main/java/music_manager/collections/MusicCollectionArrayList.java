@@ -1,4 +1,6 @@
-package music_manager.entities;
+package music_manager.collections;
+
+import music_manager.entities.Music;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,5 +43,9 @@ public class MusicCollectionArrayList extends MusicCollection{
         for (Music m: musics) {
             System.out.println(m.toString());
         }
+    }
+
+    public void load() {
+
     }
 }

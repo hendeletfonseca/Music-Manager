@@ -1,13 +1,13 @@
 package music_manager.users;
 
-public class AbstractUser {
+public abstract class AbstractUser {
 
     private String name;
     private int id;
 
-    public AbstractUser(String name, int id) {
+    public AbstractUser(String name) {
         this.name = name;
-        this.id = id;
+        this.id = (int) (Math.random() * Integer.MAX_VALUE);
     }
 
     public String getName() {

@@ -2,42 +2,58 @@ package music_manager.users;
 
 import music_manager.collections.MusicCollection;
 import music_manager.collections.MusicCollectionArrayList;
+import music_manager.entities.Music;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-
 public class User extends AbstractUser{
-
+    public static final String DIR = "src/datas/particular_collections/";
     private MusicCollection particularMusicCollection;
-    public User(String name, int id) {
-        super(name, id);
+    public User(String name) {
+        super(name);
         this. particularMusicCollection = new MusicCollectionArrayList();
-        this.particularMusicCollection.load();
+        this.particularMusicCollection.load(getDIR());
+    }
+    public String getDIR() {
+        return DIR + getName() + ".bin";
     }
 
     public MusicCollection getParticularMusicCollection() {
         return particularMusicCollection;
     }
 
-    public boolean createParticularMusicCollection() {
-        String fileName = getName() + ".bin";
+    public void createParticularMusicCollection() {
+        String fileName = getDIR();
         File file = new File(fileName);
 
         if (file.exists()) {
-            System.out.println("Particular music collection file already exists.");
-            return false;
+            System.out.println("User - createParticularMusicCollection: file already exists");
+            return;
         }
 
         try {
             RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
             randomAccessFile.close();
-            return true;
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            System.out.println("User - createParticularMusicCollection: error creating file");
         }
     }
+    public void addMusic(Music music) {
+        particularMusicCollection.add(music);
+    }
+    public void removeMusic(Music music) {
+        particularMusicCollection.remove(music.getId());
+    }
+    public Music searchMusic(String title) {
+        return particularMusicCollection.search(title);
+    }
 
+    public Music searchMusic(int id) {
+        return particularMusicCollection.search(id);
+    }
+
+    public void showMusicCollection() {
+        particularMusicCollection.show();
+    }
 }

@@ -2,6 +2,7 @@ package music_manager.collections;
 
 import music_manager.entities.Music;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -39,13 +40,44 @@ public class MusicCollectionArrayList extends MusicCollection{
         }
         return null;
     }
-    public void print() {
+    @Override
+    public void show() {
+        System.out.println("printing music collection");
         for (Music m: musics) {
+            System.out.println("printing music");
             System.out.println(m.toString());
         }
     }
 
-    public void load() {
+    @Override
+    public void save(String fileName) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(fileName))) {
 
+            for (Music m: musics) {
+                outputStream.writeObject(m);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    @Override
+    public void load(String fileName) {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(fileName))) {
+            boolean endOfFile = false;
+
+            while (!endOfFile) {
+                try {
+                    Music music = (Music) inputStream.readObject();
+                    musics.add(music);
+                } catch (EOFException e) {
+                    endOfFile = true;
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("MusicCollectionArrayList - load: particular collection not found");
+        }
+    }
+
 }

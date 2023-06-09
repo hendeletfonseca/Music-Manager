@@ -22,6 +22,7 @@ public abstract class MusicCollection {
     public abstract Music search(String title);
     public abstract Music search(int id);
     public abstract Music remove(int id);
-    public abstract void print();
-    public abstract void load();
+    public abstract void show();
+    public abstract void save(String fileName);
+    public abstract void load(String fileName);
 }

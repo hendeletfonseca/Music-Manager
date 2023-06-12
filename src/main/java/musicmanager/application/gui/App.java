@@ -1,4 +1,4 @@
-package music_manager.gui;
+package musicmanager.application.gui;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;

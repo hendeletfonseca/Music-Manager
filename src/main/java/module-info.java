@@ -1,9 +1,9 @@
 module music_manager.gui {
-    exports music_manager.gui;
+    exports musicmanager.application.gui;
 
     requires javafx.controls;
     requires javafx.graphics;
     requires java.logging;
 
-    opens music_manager.gui to javafx.graphics;
+    opens musicmanager.application.gui to javafx.graphics;
 }

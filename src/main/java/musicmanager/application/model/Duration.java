@@ -1,6 +1,8 @@
-package music_manager.entities;
+package musicmanager.application.model;
 
-public class Duration {
+import java.io.Serializable;
+
+public class Duration implements Serializable {
 
     private int min;
     private int seconds;
@@ -28,6 +30,7 @@ public class Duration {
 
     @Override
     public String toString() {
-        return "Duracao{" + "min=" + min + ", segundos=" + seconds + '}';
+        return "Duracao " + getMin() + ":" + getSeconds();
     }
+
 }

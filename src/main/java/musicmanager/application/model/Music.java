@@ -1,32 +1,33 @@
-package music_manager.entities;
+package musicmanager.application.model;
 
+import musicmanager.application.util.Random;
+
+import java.io.Serializable;
 import java.util.Date;
-public class Music {
 
-    private static int qtdMusics = 0;
+public abstract class Music implements Serializable{
     private int id;
     private String title;
     private Duration duration;
     private String authors;
     private Date date;
     private String genre;
-
     public Music(String title, Duration duration, String authors, Date date, String genre) {
         this.title = title;
         this.duration = duration;
         this.authors = authors;
         this.date = date;
         this.genre = genre;
-        qtdMusics++;
-        this.id = qtdMusics;
+        this.id = Random.getRandomInt();
     }
 
-    public static int getQtdMusics() {
-        return qtdMusics;
-    }
-
-    public static void setQtdMusics(int qtdMusics) {
-        Music.qtdMusics = qtdMusics;
+    public Music(int id, String title, Duration duration, String authors, Date date, String genre) {
+        this.id = id;
+        this.title = title;
+        this.duration = duration;
+        this.authors = authors;
+        this.date = date;
+        this.genre = genre;
     }
 
     public int getId() {
@@ -77,8 +78,7 @@ public class Music {
         this.genre = genre;
     }
 
-    @Override
     public String toString() {
-        return "Musica{" + "titulo=" + title + ", duracao=" + duration + ", autores=" + authors + ", data=" + date + ", genero=" + genre + '}';
+        return title + " - " + authors;
     }
 }

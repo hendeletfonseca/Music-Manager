@@ -9,7 +9,7 @@ public class DefaultUser extends User{
     public DefaultUser(int id, String login, String name) {
         super(id, login, name, TYPE_USER.DEFAULT_USER);
     }
-    public boolean createMusicCollection(String fileName) {
+    public boolean createMusicCollection(String fileName) {;
         MusicCollectionPersistence mcp = new MusicCollectionPersistence();
         mcp.createFile(fileName);
         return true;

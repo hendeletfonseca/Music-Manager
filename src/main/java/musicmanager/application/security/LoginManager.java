@@ -11,9 +11,9 @@ import java.util.List;
 public class LoginManager {
     private static final String ALGORITHM = "AES";
     private static final String PADDING = "AES/ECB/PKCS5Padding";
-    private static final String LOGINS_FILE = "src/datas/logins.enc";
+    public static final String LOGINS_FILE = "src/datas/logins.enc";
 
-    public boolean checkLogin(String username, String password) {
+    public static boolean checkLogin(String username, String password) {
         String[][] logins = loadLogins(LOGINS_FILE);
         for (String[] login : logins) {
             if (login[0].equals(username) && login[1].equals(password)) {
@@ -23,7 +23,7 @@ public class LoginManager {
         return false;
     }
 
-    public void saveLogin(String username, String password) {
+    public static void saveLogin(String username, String password) {
         String[][] logins = loadLogins(LOGINS_FILE);
         for (String[] login : logins) {
             if (login[0].equals(username)) {
@@ -39,7 +39,7 @@ public class LoginManager {
         saveLogins(loginList, LOGINS_FILE);
     }
 
-    public void updateLogin(String username, String newPassword) {
+    public static void updateLogin(String username, String newPassword) {
         String[][] logins = loadLogins(LOGINS_FILE);
         List<Login> loginList = new ArrayList<>();
         for (String[] login : logins) {
@@ -52,7 +52,7 @@ public class LoginManager {
         saveLogins(loginList, LOGINS_FILE);
     }
 
-    public boolean deleteLogin(String username) {
+    public static boolean deleteLogin(String username) {
         String[][] logins = loadLogins(LOGINS_FILE);
         List<Login> loginList = new ArrayList<>();
         boolean found = false;
@@ -69,7 +69,7 @@ public class LoginManager {
         return found;
     }
 
-    private void saveLogins(List<Login> loginList, String filename) {
+    private static void saveLogins(List<Login> loginList, String filename) {
         try (FileOutputStream fos = new FileOutputStream(filename);
              CipherOutputStream cos = createCipherOutputStream(fos)) {
             ObjectOutputStream oos = new ObjectOutputStream(cos);
@@ -80,7 +80,7 @@ public class LoginManager {
         }
     }
 
-    private String[][] loadLogins(String filename) {
+    private static String[][] loadLogins(String filename) {
         try (FileInputStream fis = new FileInputStream(filename);
              CipherInputStream cis = createCipherInputStream(fis)) {
             ObjectInputStream ois = new ObjectInputStream(cis);
@@ -98,21 +98,21 @@ public class LoginManager {
         }
     }
 
-    private CipherOutputStream createCipherOutputStream(OutputStream outputStream) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+    private static CipherOutputStream createCipherOutputStream(OutputStream outputStream) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         Cipher cipher = Cipher.getInstance(PADDING);
         SecretKey secretKey = generateSecretKey();
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         return new CipherOutputStream(outputStream, cipher);
     }
 
-    private CipherInputStream createCipherInputStream(InputStream inputStream) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+    private static CipherInputStream createCipherInputStream(InputStream inputStream) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         Cipher cipher = Cipher.getInstance(PADDING);
         SecretKey secretKey = generateSecretKey();
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         return new CipherInputStream(inputStream, cipher);
     }
 
-    private SecretKey generateSecretKey() throws NoSuchAlgorithmException {
+    private static SecretKey generateSecretKey() throws NoSuchAlgorithmException {
         byte[] keyBytes = "MySecretKey12345".getBytes();
         SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, ALGORITHM);
         return secretKeySpec;

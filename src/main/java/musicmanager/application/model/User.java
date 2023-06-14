@@ -8,7 +8,7 @@ public abstract class User implements Serializable {
     private final int id;
     private String login;
     private String name;
-    private TYPE_USER type;
+    private final TYPE_USER type;
 
     public User(int id, String login, String name, TYPE_USER type) {
         this.id = id;

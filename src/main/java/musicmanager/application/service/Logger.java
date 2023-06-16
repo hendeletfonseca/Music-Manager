@@ -9,31 +9,24 @@ import musicmanager.application.security.LoginManager;
 import musicmanager.application.util.Random;
 
 public class Logger {
-    public static final String USERS_DIR = "src/datas/usersdata.bin";
 
     public static User userCreator(String login, String password) {
 
         if (LoginManager.checkLogin(login, password)) {
-            TYPE_USER type = UserPersistence.getUserType(USERS_DIR, login);
-            if (type == TYPE_USER.DEFAULT_USER) {
-                return UserPersistence.loadUser(USERS_DIR, login);
-            }
-            if (type == TYPE_USER.ADMIN_USER) {
-                return UserPersistence.loadUser(USERS_DIR, login);
-            }
+            return UserPersistence.loadUser(login);
         }
         return null;
     }
     public static boolean createUser(String name, String login, String password, TYPE_USER userType) {
-        if (!UserPersistence.userAlreadyExist(USERS_DIR, login)) {
+        if (!UserPersistence.userAlreadyExist(login)) {
             if (userType == TYPE_USER.DEFAULT_USER) {
                 DefaultUser user = new DefaultUser(Random.getRandomInt(), login, name);
                 LoginManager.saveLogin(login, password);
-                UserPersistence.saveUser(user, USERS_DIR);
+                UserPersistence.saveUser(user);
             } else if (userType == TYPE_USER.ADMIN_USER) {
                 AdminUser user = new AdminUser(Random.getRandomInt(), login, name);
                 LoginManager.saveLogin(login, password);
-                UserPersistence.saveUser(user, USERS_DIR);
+                UserPersistence.saveUser(user);
             }
             return true;
         }
@@ -43,6 +36,6 @@ public class Logger {
 
     }
     public static TYPE_USER getUserType(String login) {
-        return UserPersistence.getUserType(USERS_DIR, login);
+        return UserPersistence.getUserType(login);
     }
 }

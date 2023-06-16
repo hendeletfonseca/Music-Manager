@@ -29,7 +29,7 @@ public class Application {
             if (option == 2) {
                 System.out.println("Digite seu login");
                 login = scanner.next();
-                while (UserPersistence.userAlreadyExist(usersDataDir, login)) {
+                while (UserPersistence.userAlreadyExist(login)) {
                     System.out.println("Login já existente, digite outro");
                     login = scanner.next();
                 }
@@ -55,7 +55,7 @@ public class Application {
             login = scanner.next();
             System.out.println("Digite sua senha");
             password = scanner.next();
-            userType = UserPersistence.getUserType(usersDataDir, login);
+            userType = UserPersistence.getUserType(login);
 
             if (userType == TYPE_USER.DEFAULT_USER) {
                 DefaultUser user = (DefaultUser) Logger.userCreator(login, password);

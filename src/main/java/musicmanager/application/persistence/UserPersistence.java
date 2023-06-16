@@ -10,8 +10,10 @@ import java.util.List;
 
 public class UserPersistence {
 
-    public static void saveUsers(List<User> users, String filename) {
-        try (FileOutputStream fos = new FileOutputStream(filename);
+    public static String usersDataDir = "src/datas/usersdata.bin";
+
+    public static void saveUsers(List<User> users) {
+        try (FileOutputStream fos = new FileOutputStream(UserPersistence.usersDataDir);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(users);
         } catch (IOException e) {
@@ -19,8 +21,8 @@ public class UserPersistence {
         }
     }
 
-    public static List<User> loadUsers(String filename) {
-        try (FileInputStream fis = new FileInputStream(filename);
+    public static List<User> loadUsers() {
+        try (FileInputStream fis = new FileInputStream(UserPersistence.usersDataDir);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
             return (List<User>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -29,8 +31,8 @@ public class UserPersistence {
         }
     }
 
-    public static DefaultUser loadDefaultUser(String filename, String login) {
-        List<User> users = loadUsers(filename);
+    public static DefaultUser loadDefaultUser(String login) {
+        List<User> users = loadUsers();
         if (users != null) {
             for (User user : users) {
                 if (user.getLogin().equals(login)) {
@@ -40,8 +42,8 @@ public class UserPersistence {
         }
         return null;
     }
-    public static User loadUser(String filename, String login) {
-        List<User> users = loadUsers(filename);
+    public static User loadUser(String login) {
+        List<User> users = loadUsers();
         if (users != null) {
             for (User user : users) {
                 if (user.getLogin().equals(login)) {
@@ -51,18 +53,18 @@ public class UserPersistence {
         }
         return null;
     }
-    public static boolean saveUser(User user, String filename) {
-        List<User> users = loadUsers(filename);
+    public static boolean saveUser(User user) {
+        List<User> users = loadUsers();
         if (users == null) {
             users = new ArrayList<>();
         }
         users.add(user);
-        saveUsers(users, filename);
+        saveUsers(users);
         return true;
     }
 
-    public static boolean deleteUser(String filename, String login) {
-        List<User> users = loadUsers(filename);
+    public static boolean deleteUser(String login) {
+        List<User> users = loadUsers();
         if (users != null) {
             User userToDelete = null;
             for (User user : users) {
@@ -73,19 +75,19 @@ public class UserPersistence {
             }
             if (userToDelete != null) {
                 users.remove(userToDelete);
-                saveUsers(users, filename);
+                saveUsers(users);
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean deleteUsers(String filename) {
-        File file = new File(filename);
+    public static boolean deleteUsers() {
+        File file = new File(UserPersistence.usersDataDir);
         return file.delete();
     }
-    public static TYPE_USER getUserType(String filename, String login) {
-        List<User> users = loadUsers(filename);
+    public static TYPE_USER getUserType(String login) {
+        List<User> users = loadUsers();
         if (users != null) {
             for (User user : users) {
                 if (user.getLogin().equals(login)) {
@@ -95,8 +97,8 @@ public class UserPersistence {
         }
         return null;
     }
-    public static boolean userAlreadyExist(String filename, String login) {
-        List<User> users = loadUsers(filename);
+    public static boolean userAlreadyExist(String login) {
+        List<User> users = loadUsers();
         if (users != null) {
             for (User user : users) {
                 if (user.getLogin().equals(login)) {

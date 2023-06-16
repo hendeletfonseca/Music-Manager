@@ -15,7 +15,7 @@ public class AdminUser extends User{
     public boolean deleteUserAccount(String login) {
         LoginManager lm = new LoginManager();
         UserPersistence up = new UserPersistence();
-        up.deleteUser("src/datas/usersdata.bin", login);
+        up.deleteUser(login);
         return lm.deleteLogin(login);
     }
 }

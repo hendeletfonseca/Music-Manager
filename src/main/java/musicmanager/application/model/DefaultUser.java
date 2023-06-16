@@ -17,7 +17,7 @@ public class DefaultUser extends User{
     public boolean deleteAccount() {
         LoginManager lm = new LoginManager();
         UserPersistence up = new UserPersistence();
-        up.deleteUser("src/datas/usersdata.bin", getLogin());
+        up.deleteUser(getLogin());
         return lm.deleteLogin(getLogin());
     }
 }

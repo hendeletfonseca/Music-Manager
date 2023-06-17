@@ -10,11 +10,6 @@ public class Song extends Music{
         this.lyric = lyric;
     }
 
-    public Song(int id, String title, Duration duration, String authors, Date date, String genre, Lyric lyric) {
-        super(id, title, duration, authors, date, genre);
-        this.lyric = lyric;
-    }
-
     public Lyric getLyric() {
         return lyric;
     }

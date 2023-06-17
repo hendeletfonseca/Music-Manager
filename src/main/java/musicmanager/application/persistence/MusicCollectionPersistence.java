@@ -5,12 +5,14 @@ import musicmanager.application.model.MusicCollection;
 import java.io.*;
 
 public class MusicCollectionPersistence {
-    public boolean fileExists(String filename) {
+    public static final String PARTICULAR_COL_DIR = "src/datas/particularcollections/";
+    public static final String ALL_MUSICS_DIR = "src/datas/allmusics.bin";
+    public static boolean fileExists(String filename) {
         File file = new File(filename);
         return file.exists();
     }
 
-    public void createFile(String filename) {
+    public static void createFile(String filename) {
         if (fileExists(filename)) {
             return;
         }
@@ -22,7 +24,7 @@ public class MusicCollectionPersistence {
         }
     }
 
-    public void save(MusicCollection musicCollection, String filename) {
+    public static void save(MusicCollection musicCollection, String filename) {
         if (!fileExists(filename)) {
             createFile(filename);
         }
@@ -34,20 +36,22 @@ public class MusicCollectionPersistence {
         }
     }
 
-    public MusicCollection load(String filename) {
+    public static MusicCollection load(String filename) {
         if (!fileExists(filename)) {
-            return null;
+            createFile(filename);
         }
-        try (FileInputStream fis = new FileInputStream(filename);
-             ObjectInputStream ois = new ObjectInputStream(fis)) {
+        try {
+            FileInputStream fis = new FileInputStream(filename);
+            ObjectInputStream ois = new ObjectInputStream(fis);
             return (MusicCollection) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        }catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
-            return null;
+            //return new MusicCollection();
         }
+        return null;
     }
 
-    public boolean delete(String filename) {
+    public static boolean delete(String filename) {
         if (!fileExists(filename)) {
             return true;
         }

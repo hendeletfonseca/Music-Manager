@@ -15,11 +15,6 @@ public class InstrumentalMusic extends Music{
         this.sheetMusicFileName = DIR + sheetMusicFileName + ".png";
     }
 
-    public InstrumentalMusic(int id, String title, Duration duration, String authors, Date date, String genre, String sheetMusicFileName) {
-        super(id, title, duration, authors, date, genre);
-        this.sheetMusicFileName = DIR + sheetMusicFileName + ".png";
-    }
-
     public String getSheetMusicFileName() {
         return sheetMusicFileName;
     }

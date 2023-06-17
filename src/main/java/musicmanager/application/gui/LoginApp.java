@@ -50,6 +50,7 @@ public class LoginApp extends Application {
                 handleCreateAccountButton(loginField.getText(), passwordField.getText());
             } catch (Exception e) {
                 System.out.println(e.getMessage());
+                //System.out.println(loginField.getText() + " " + passwordField.getText());
             }
         });
         recoverAccountButton.setOnAction(event -> {
@@ -103,9 +104,9 @@ public class LoginApp extends Application {
                 }
                 case ADMIN_USER -> {
                     AdminUser adminUser = (AdminUser) UserPersistence.loadUser(login);
-                    AdminUserApp adminApp = new AdminUserApp();
+                    AdminUserApp adminApp = new AdminUserApp(adminUser);
                     try {
-                        adminApp.start(new Stage());
+                        adminApp.start(new Stage(), adminUser);
                     }catch (Exception e) {
                         System.out.println(e.getMessage());
                     }

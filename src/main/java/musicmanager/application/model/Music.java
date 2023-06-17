@@ -21,15 +21,6 @@ public abstract class Music implements Serializable{
         this.id = Random.getRandomInt();
     }
 
-    public Music(int id, String title, Duration duration, String authors, Date date, String genre) {
-        this.id = id;
-        this.title = title;
-        this.duration = duration;
-        this.authors = authors;
-        this.date = date;
-        this.genre = genre;
-    }
-
     public int getId() {
         return id;
     }
@@ -79,6 +70,6 @@ public abstract class Music implements Serializable{
     }
 
     public String toString() {
-        return title + " - " + authors;
+        return title + " - " + authors + " id: " + id;
     }
 }

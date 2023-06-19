@@ -178,6 +178,13 @@ public class AdminUserApp extends Application {
         if (titleResult.isPresent()) {
             String title = titleResult.get();
             MusicCollection mc = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
+            if (mc == null) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText("Music found");
+                alert.showAndWait();
+                return;
+            }
             Music music = mc.searchMusic(title);
             if (music == null) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -195,7 +202,7 @@ public class AdminUserApp extends Application {
         }
     }
     public void handleUpdateMusicButton() {
-        System.out.println("Update Music Button Clicked");
+        System.out.println();
     }
     public void handleDeleteMusicButton() {
         System.out.println("Delete Music Button Clicked");

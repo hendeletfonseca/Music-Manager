@@ -30,18 +30,6 @@ public class UserPersistence {
             return null;
         }
     }
-
-    public static DefaultUser loadDefaultUser(String login) {
-        List<User> users = loadUsers();
-        if (users != null) {
-            for (User user : users) {
-                if (user.getLogin().equals(login)) {
-                    return (DefaultUser) user;
-                }
-            }
-        }
-        return null;
-    }
     public static User loadUser(String login) {
         List<User> users = loadUsers();
         if (users != null) {

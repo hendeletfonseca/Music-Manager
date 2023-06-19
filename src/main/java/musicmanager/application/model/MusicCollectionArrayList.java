@@ -37,6 +37,7 @@ public class MusicCollectionArrayList extends MusicCollection{
 
     @Override
     public Music removeMusic(Music music) {
+        if (music == null) return null;
         Music m = searchMusic(music.getTitle());
         if (m != null) {
             musics.remove(m);

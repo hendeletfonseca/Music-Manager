@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -15,6 +16,8 @@ import musicmanager.application.model.Music;
 import musicmanager.application.model.MusicCollection;
 import musicmanager.application.model.MusicCollectionArrayList;
 import musicmanager.application.persistence.MusicCollectionPersistence;
+import musicmanager.application.persistence.UserPersistence;
+import musicmanager.application.security.LoginManager;
 
 import java.util.Optional;
 
@@ -87,7 +90,7 @@ public class DefaultUserApp extends Application {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Add Music");
         TextInputDialog titleDialog = new TextInputDialog();
-        titleDialog.setTitle("Add music");
+        titleDialog.setTitle("Add Music");
         titleDialog.setHeaderText("Enter Music Title");
         titleDialog.setContentText("Title:");
 
@@ -95,42 +98,129 @@ public class DefaultUserApp extends Application {
 
         if (titleResult.isPresent()) {
             String title = titleResult.get();
-            MusicCollection allmusics = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
-            if (allmusics != null){
-                Music music = allmusics.searchMusic(title);
+            MusicCollection allMusics = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
+            if (allMusics != null) {
+                System.out.println("allMusics is not null");
+                Music music = allMusics.searchMusic(title);
                 if (music != null) {
-                    MusicCollection particularmusics = MusicCollectionPersistence.load(dir);
-                    if (particularmusics != null) {
-                        particularmusics.addMusic(music);
-                        MusicCollectionPersistence.save(particularmusics, dir);
-                    }else {
-                        MusicCollectionArrayList mcal = new MusicCollectionArrayList();
-                        mcal.addMusic(music);
-                        MusicCollectionPersistence.save(mcal, dir);
+                    System.out.println("music is not null");
+                    MusicCollection particularCollection = MusicCollectionPersistence.load(dir);
+                    if (particularCollection == null){
+                        particularCollection = new MusicCollectionArrayList();
                     }
-
+                    particularCollection.addMusic(music);
+                    MusicCollectionPersistence.save(particularCollection, dir);
+                    alert.setContentText("Music added successfully!");
+                    alert.showAndWait();
                 }else {
                     alert.setContentText("Music not found!");
                     alert.showAndWait();
                 }
+            }else {
+                alert.setContentText("Music not found!");
+                alert.showAndWait();
             }
         }
-        MusicCollectionPersistence.load(dir).show();
     }
     public void handleDeleteMusicButton() {
-        System.out.println("Delete Music Button clicked");
-        // Add custom logic for delete music
+        String dir = MusicCollectionPersistence.PARTICULAR_COL_DIR + defaultUser.getId() + ".bin";
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Remove Music");
+        TextInputDialog titleDialog = new TextInputDialog();
+        titleDialog.setTitle("Remove Music");
+        titleDialog.setHeaderText("Enter Music Title");
+        titleDialog.setContentText("Title:");
+
+        Optional<String> titleResult = titleDialog.showAndWait();
+
+        if (titleResult.isPresent()) {
+            String title = titleResult.get();
+            MusicCollection particularCollection = MusicCollectionPersistence.load(dir);
+            if (particularCollection == null) {
+                alert.setContentText("Music not found!");
+                alert.showAndWait();
+                return;
+            }
+            Music music = particularCollection.removeMusic(particularCollection.searchMusic(title));
+            if (music != null) {
+                MusicCollectionPersistence.save(particularCollection, dir);
+                alert.setContentText("Music removed successfully!");
+                alert.showAndWait();
+            }else {
+                alert.setContentText("Music not found!");
+                alert.showAndWait();
+            }
+        }
     }
     public void handleSearchMusicFromParticularCollectionButton() {
-        System.out.println("Search Music From Particular Collection Button clicked");
-        // Add custom logic for search music from particular collection
+        String dir = MusicCollectionPersistence.PARTICULAR_COL_DIR + defaultUser.getId() + ".bin";
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Search Music");
+        TextInputDialog titleDialog = new TextInputDialog();
+        titleDialog.setTitle("Search Music");
+        titleDialog.setHeaderText("Enter Music Title");
+        titleDialog.setContentText("Title:");
+
+        Optional<String> titleResult = titleDialog.showAndWait();
+
+        if (titleResult.isPresent()) {
+            String title = titleResult.get();
+            MusicCollection particularCollection = MusicCollectionPersistence.load(dir);
+            if (particularCollection != null) {
+                Music music = particularCollection.searchMusic(title);
+                if (music != null) {
+                    alert.setContentText("Music found!\n" + music.toString());
+                    alert.showAndWait();
+                }else {
+                    alert.setContentText("Music not found!");
+                    alert.showAndWait();
+                }
+            }else {
+                alert.setContentText("Music not found!");
+                alert.showAndWait();
+            }
+        }
     }
     public void handleSearchMusicFromAllMusicsButton() {
-        System.out.println("Search Music From All Musics Button clicked");
-        // Add custom logic for search music from all musics
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Search Music");
+        TextInputDialog titleDialog = new TextInputDialog();
+        titleDialog.setTitle("Search Music");
+        titleDialog.setHeaderText("Enter Music Title");
+        titleDialog.setContentText("Title:");
+
+        Optional<String> titleResult = titleDialog.showAndWait();
+
+        if (titleResult.isPresent()) {
+            String title = titleResult.get();
+            MusicCollection allMusics = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
+            Music music = allMusics.searchMusic(title);
+            if (music != null) {
+                alert.setContentText("Music found!\n" + music.toString());
+                alert.showAndWait();
+            }else {
+                alert.setContentText("Music not found!");
+                alert.showAndWait();
+            }
+        }
     }
     public void handleDeleteAccountButton() {
-        System.out.println("Delete Account Button clicked");
-        // Add custom logic for delete account
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Delete Account");
+        alert.setHeaderText("Delete Account");
+        alert.setContentText("Are you sure you want to delete your account?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            UserPersistence.deleteUser(defaultUser.getLogin());
+            LoginManager.deleteLogin(defaultUser.getLogin());
+            boolean ok = MusicCollectionPersistence.delete(MusicCollectionPersistence.PARTICULAR_COL_DIR + defaultUser.getId() + ".bin");
+            System.out.println(ok);
+            alert.setContentText("Account deleted successfully!");
+            alert.showAndWait();
+            System.exit(0);
+        } else {
+            alert.setContentText("Account not deleted!");
+            alert.showAndWait();
+        }
     }
 }

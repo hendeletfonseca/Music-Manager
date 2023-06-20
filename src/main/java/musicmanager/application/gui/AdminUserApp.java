@@ -9,6 +9,9 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import musicmanager.application.model.*;
 import musicmanager.application.persistence.MusicCollectionPersistence;
+import musicmanager.application.persistence.UserPersistence;
+import musicmanager.application.security.LoginManager;
+import musicmanager.application.service.Logger;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -17,9 +20,28 @@ import java.util.Optional;
 
 public class AdminUserApp extends Application {
     private AdminUser adminUser;
+    private MusicCollection musicCollection;
     public AdminUserApp(AdminUser adminUser) {
         this.adminUser = adminUser;
+        this.musicCollection = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
     }
+
+    public AdminUser getAdminUser() {
+        return adminUser;
+    }
+
+    public void setAdminUser(AdminUser adminUser) {
+        this.adminUser = adminUser;
+    }
+
+    public MusicCollection getMusicCollection() {
+        return musicCollection;
+    }
+
+    public void setMusicCollection(MusicCollection musicCollection) {
+        this.musicCollection = musicCollection;
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -131,10 +153,9 @@ public class AdminUserApp extends Application {
                             if (resultLyric.isPresent()) {
                                 lyric = new Lyric(resultLyric.get());
                                 Song song = new Song(title, duration, author, date, genre, lyric);
-                                MusicCollection allmusics = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
-                                System.out.println("all musics: " + allmusics);
-                                allmusics.addMusic(song);
-                                MusicCollectionPersistence.save(allmusics, MusicCollectionPersistence.ALL_MUSICS_DIR);
+                                System.out.println("all musics: " + musicCollection);
+                                musicCollection.add(song);
+                                MusicCollectionPersistence.save(musicCollection, MusicCollectionPersistence.ALL_MUSICS_DIR);
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setTitle("Information Dialog");
                                 alert.setHeaderText(null);
@@ -150,9 +171,9 @@ public class AdminUserApp extends Application {
                             Optional<String> resultSheetMusic = dialogSheetMusic.showAndWait();
                             if (resultSheetMusic.isPresent()) {
                                 InstrumentalMusic instrumentalMusic = new InstrumentalMusic(title, duration, author, date, genre, resultSheetMusic.get());
-                                MusicCollection allmusics = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
-                                allmusics.addMusic(instrumentalMusic);
-                                MusicCollectionPersistence.save(allmusics, MusicCollectionPersistence.ALL_MUSICS_DIR);
+                                System.out.println("all musics: " + musicCollection);
+                                musicCollection.addMusic(instrumentalMusic);
+                                MusicCollectionPersistence.save(musicCollection, MusicCollectionPersistence.ALL_MUSICS_DIR);
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setTitle("Information Dialog");
                                 alert.setHeaderText(null);
@@ -177,43 +198,172 @@ public class AdminUserApp extends Application {
 
         if (titleResult.isPresent()) {
             String title = titleResult.get();
-            MusicCollection mc = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
-            if (mc == null) {
+            if (musicCollection == null) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Information Dialog");
                 alert.setHeaderText("Music found");
                 alert.showAndWait();
                 return;
             }
-            Music music = mc.searchMusic(title);
+            Music music = musicCollection.searchMusic(title);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
             if (music == null) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Information Dialog");
                 alert.setHeaderText("Music not found");
                 alert.setContentText("Music not found");
-                alert.showAndWait();
             }else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Information Dialog");
                 alert.setHeaderText("Music found");
                 alert.setContentText(music.toString());
-                alert.showAndWait();
             }
+            alert.showAndWait();
         }
     }
     public void handleUpdateMusicButton() {
-        System.out.println();
+        TextInputDialog titleDialog = new TextInputDialog();
+        titleDialog.setTitle("Update Music");
+        titleDialog.setHeaderText("Enter Music Title");
+        titleDialog.setContentText("Title:");
+
+        Optional<String> titleResult = titleDialog.showAndWait();
+
+        if (titleResult.isPresent()) {
+            String title = titleResult.get();
+            if (musicCollection == null) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText("Music found");
+                alert.showAndWait();
+                return;
+            }
+            Music music = musicCollection.searchMusic(title);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            if (music == null) {
+                alert.setHeaderText("Music not found");
+                alert.setContentText("Music not found");
+            }else {
+                alert.setHeaderText("Music found and deleted");
+                alert.setContentText(music.toString());
+                musicCollection.removeMusic(music);
+                handleRegisterMusicButton();
+                MusicCollectionPersistence.save(musicCollection, MusicCollectionPersistence.ALL_MUSICS_DIR);
+            }
+        }
     }
     public void handleDeleteMusicButton() {
-        System.out.println("Delete Music Button Clicked");
+        TextInputDialog nameDialog = new TextInputDialog();
+        nameDialog.setTitle("Delete Music");
+        nameDialog.setHeaderText("Enter Music Title");
+        nameDialog.setContentText("Title:");
+
+        Optional<String> titleResult = nameDialog.showAndWait();
+
+        if (titleResult.isPresent()) {
+            String title = titleResult.get();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            Music music = musicCollection.searchMusic(title);
+            if (musicCollection == null || music == null) {
+                alert.setHeaderText("Music not found");
+                alert.showAndWait();
+                return;
+            }
+            musicCollection.removeMusic(music);
+            alert.setHeaderText("Music found and deleted");
+            alert.showAndWait();
+        }
     }
     public void handleAddUserButton() {
-        System.out.println("Add User Button Clicked");
+        Label nameLabel = new Label("Name:");
+        TextField nameField = new TextField();
+
+        Label loginLabel = new Label("Login:");
+        TextField loginField = new TextField();
+
+        Label passwordLabel = new Label("Password:");
+        TextField passwordField = new TextField();
+
+        GridPane dialogContent = new GridPane();
+        dialogContent.setVgap(10);
+        dialogContent.addRow(0, nameLabel, nameField);
+        dialogContent.addRow(1, loginLabel, loginField);
+        dialogContent.addRow(2, passwordLabel, passwordField);
+
+        // Create dialog
+        Alert dialog1 = new Alert(Alert.AlertType.CONFIRMATION);
+        dialog1.setTitle("Register User");
+        dialog1.setHeaderText("Add User Details");
+        dialog1.getDialogPane().setContent(dialogContent);
+
+
+        dialog1.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                String name = nameField.getText();
+                String login = loginField.getText();
+                String password = passwordField.getText();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                if (!UserPersistence.userAlreadyExist(login)) {
+                    List<TYPE_USER> userTypes = Arrays.asList(TYPE_USER.DEFAULT_USER, TYPE_USER.ADMIN_USER);
+
+                    ChoiceDialog<TYPE_USER> dialog = new ChoiceDialog<>(TYPE_USER.DEFAULT_USER, userTypes);
+                    dialog.setTitle("Create Account");
+                    dialog.setHeaderText("Select User Type");
+                    dialog.setContentText("User Type:");
+
+                    Optional<TYPE_USER> result = dialog.showAndWait();
+                    result.ifPresent(userType -> {
+                        Logger.createUser(name, login, password, userType);
+                        LoginManager.saveLogin(login, password);
+                    });
+                }else {
+                    alert.setHeaderText("User already exist");
+                    alert.showAndWait();
+                }
+            }
+        });
     }
     public void handleSearchUserButton() {
-        System.out.println("Search User Button Clicked");
+        TextInputDialog loginDialog = new TextInputDialog();
+
+        loginDialog.setTitle("Search User");
+        loginDialog.setHeaderText("Enter User Login");
+        loginDialog.setContentText("Login:");
+
+        Optional<String> loginResult = loginDialog.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        if (loginResult.isPresent() && UserPersistence.userAlreadyExist(loginResult.get())) {
+            alert.setHeaderText("User found");
+            String userLogin = loginResult.get();
+            User user = UserPersistence.loadUser(userLogin);
+            if (user != null) {
+                alert.setContentText(user.toString());
+                alert.showAndWait();
+            }
+        }else {
+            alert.setHeaderText("User not found");
+            alert.showAndWait();
+        }
     }
     public void handleDeleteUserButton() {
-        System.out.println("Delete User Button Clicked");
+        TextInputDialog loginDialog = new TextInputDialog();
+
+        loginDialog.setTitle("Delete User");
+        loginDialog.setHeaderText("Enter User Login");
+        loginDialog.setContentText("Login:");
+
+        Optional<String> loginResult = loginDialog.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        if (loginResult.isPresent() && UserPersistence.userAlreadyExist(loginResult.get())) {
+            LoginManager.deleteLogin(loginResult.get());
+            UserPersistence.deleteUser(loginResult.get());
+            alert.setHeaderText("User deleted");
+            alert.showAndWait();
+        }else {
+            alert.setHeaderText("User not found");
+            alert.showAndWait();
+        }
     }
 }

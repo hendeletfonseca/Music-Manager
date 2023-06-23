@@ -4,12 +4,10 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import musicmanager.application.model.DefaultUser;
 import musicmanager.application.model.Music;
@@ -45,6 +43,7 @@ public class DefaultUserApp extends Application {
         Button searchMusicFromParticularCollection = new Button("Search Music From Particular Collection");
         Button searchMusicFromAllMusics = new Button("Search Music From All Musics");
         Button deleteAccount = new Button("Delete Account");
+        Button showMusics = new Button("See All Musics");
 
         // Set event handler for the button
         createMusicCollection.setOnAction(event -> handleCreateMusicCollectionButton());
@@ -53,6 +52,7 @@ public class DefaultUserApp extends Application {
         searchMusicFromParticularCollection.setOnAction(event -> handleSearchMusicFromParticularCollectionButton());
         searchMusicFromAllMusics.setOnAction(event -> handleSearchMusicFromAllMusicsButton());
         deleteAccount.setOnAction(event -> handleDeleteAccountButton());
+        showMusics.setOnAction(event -> handleShowMusicsButton());
 
         // Create a layout pane and add the button
         GridPane root = new GridPane();
@@ -67,6 +67,7 @@ public class DefaultUserApp extends Application {
         root.add(searchMusicFromParticularCollection,0,3);
         root.add(searchMusicFromAllMusics,0,4);
         root.add(deleteAccount,0,5);
+        root.add(showMusics,0,6);
 
         primaryStage.setScene(new Scene(root, 400, 400));
         primaryStage.show();
@@ -223,4 +224,40 @@ public class DefaultUserApp extends Application {
             alert.showAndWait();
         }
     }
+
+    public void handleShowMusicsButton() {
+        String dir = MusicCollectionPersistence.PARTICULAR_COL_DIR + defaultUser.getId() + ".bin";
+        MusicCollection particularCollection = MusicCollectionPersistence.load(dir);
+        MusicCollection allMusic = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
+
+        Stage stage = new Stage();
+        stage.setTitle("Music Collection");
+
+        VBox content = new VBox();
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+
+        if ((particularCollection != null) && (allMusic != null)) {
+            Label labelMyMusics = new Label("My collection musics:\n");
+            content.getChildren().add(labelMyMusics);
+            for (Music music : particularCollection.getMusics()) {
+                Label label = new Label(music.toString() + "\n");
+                content.getChildren().add(label);
+            }
+            Label labelAllMusics = new Label("All musics:\n");
+            content.getChildren().add(labelAllMusics);
+            for (Music music : allMusic.getMusics()) {
+                Label label = new Label(music.toString() + "\n");
+                content.getChildren().add(label);
+            }
+        } else {
+            Label label = new Label("No music found in the collection.");
+            content.getChildren().add(label);
+        }
+
+        Scene scene = new Scene(scrollPane, 400, 400);
+        stage.setScene(scene);
+        stage.show();
+    }
+
 }

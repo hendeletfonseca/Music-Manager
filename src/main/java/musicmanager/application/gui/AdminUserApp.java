@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import musicmanager.application.model.*;
 import musicmanager.application.persistence.MusicCollectionPersistence;
@@ -59,6 +60,7 @@ public class AdminUserApp extends Application {
         Button addUser = new Button("Add User");
         Button searchUser = new Button("Search User");
         Button deleteUser = new Button("Delete User");
+        Button showAllMusics = new Button("Show All Musics");
 
         registerMusic.setOnAction(event -> handleRegisterMusicButton());
         searchMusic.setOnAction(event -> handleSearchMusicButton());
@@ -67,6 +69,7 @@ public class AdminUserApp extends Application {
         addUser.setOnAction(event -> handleAddUserButton());
         searchUser.setOnAction(event -> handleSearchUserButton());
         deleteUser.setOnAction(event -> handleDeleteUserButton());
+        showAllMusics.setOnAction(event -> handleShowMusicsButton());
 
         GridPane root = new GridPane();
         root.setAlignment(Pos.CENTER);
@@ -81,6 +84,7 @@ public class AdminUserApp extends Application {
         root.add(addUser, 0, 4);
         root.add(searchUser, 0, 5);
         root.add(deleteUser, 0, 6);
+        root.add(showAllMusics, 0, 7);
 
         primaryStage.setScene(new Scene(root, 400, 400));
         primaryStage.show();
@@ -145,9 +149,9 @@ public class AdminUserApp extends Application {
                     switch (musicType) {
                         case "Song":
                             TextInputDialog dialogLyric = new TextInputDialog();
-                            dialog.setTitle("Lyric");
-                            dialog.setHeaderText("Add Lyric fileName");
-                            dialog.setContentText("Lyric fileName:");
+                            dialogLyric.setTitle("Lyric");
+                            dialogLyric.setHeaderText("Add Lyric fileName");
+                            dialogLyric.setContentText("Lyric fileName:");
                             Optional<String> resultLyric = dialogLyric.showAndWait();
                             Lyric lyric;
                             if (resultLyric.isPresent()) {
@@ -269,6 +273,7 @@ public class AdminUserApp extends Application {
                 return;
             }
             musicCollection.removeMusic(music);
+            MusicCollectionPersistence.save(musicCollection, MusicCollectionPersistence.ALL_MUSICS_DIR);
             alert.setHeaderText("Music found and deleted");
             alert.showAndWait();
         }
@@ -365,5 +370,31 @@ public class AdminUserApp extends Application {
             alert.setHeaderText("User not found");
             alert.showAndWait();
         }
+    }
+    public void handleShowMusicsButton() {
+        MusicCollection allMusic = MusicCollectionPersistence.load(MusicCollectionPersistence.ALL_MUSICS_DIR);
+
+        Stage stage = new Stage();
+        stage.setTitle("Music Collection");
+
+        VBox content = new VBox();
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+
+        if (allMusic != null) {
+            Label labelAllMusics = new Label("All musics:\n");
+            content.getChildren().add(labelAllMusics);
+            for (Music music : allMusic.getMusics()) {
+                Label label = new Label(music.toString() + "\n");
+                content.getChildren().add(label);
+            }
+        } else {
+            Label label = new Label("No music found in the collection.");
+            content.getChildren().add(label);
+        }
+
+        Scene scene = new Scene(scrollPane, 400, 400);
+        stage.setScene(scene);
+        stage.show();
     }
 }

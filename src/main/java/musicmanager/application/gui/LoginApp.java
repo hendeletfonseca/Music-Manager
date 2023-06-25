@@ -147,12 +147,12 @@ public class LoginApp extends Application {
                     switch (userType) {
                         case DEFAULT_USER:
                             Logger.createUser(name, login, password, TYPE_USER.DEFAULT_USER);
-                            LoginManager.saveLogin(login, password);
+
 
                             break;
                         case ADMIN_USER:
                             Logger.createUser(name, login, password, TYPE_USER.ADMIN_USER);
-                            LoginManager.saveLogin(login, password);
+
 
                             break;
                     }

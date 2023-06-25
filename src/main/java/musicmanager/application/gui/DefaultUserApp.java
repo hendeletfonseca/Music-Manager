@@ -237,12 +237,14 @@ public class DefaultUserApp extends Application {
         ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
 
-        if ((particularCollection != null) && (allMusic != null)) {
-            Label labelMyMusics = new Label("My collection musics:\n");
-            content.getChildren().add(labelMyMusics);
-            for (Music music : particularCollection.getMusics()) {
-                Label label = new Label(music.toString() + "\n");
-                content.getChildren().add(label);
+        if ((allMusic != null)) {
+            if ((particularCollection != null)) {
+                Label labelMyMusics = new Label("My collection musics:\n");
+                content.getChildren().add(labelMyMusics);
+                for (Music music : particularCollection.getMusics()) {
+                    Label label = new Label(music.toString() + "\n");
+                    content.getChildren().add(label);
+                }
             }
             Label labelAllMusics = new Label("All musics:\n");
             content.getChildren().add(labelAllMusics);
